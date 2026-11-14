@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>TRIX Pharmacy</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
+:root{--bg:#121414;--surface:#171a1a;--ink:#eef4f2;--mute:#8fa3a0;--line:#2b3232;--side:#112c33;--side-on:#1f4d58;--brand:#12968c;--brand-b:#2bc2b3;--chip:#1b4a4a;--bad:#ff7b72;--bad-t:#3b1f1f;--warn:#f0b24a;--warn-t:#3a2c10;--ok:#4ed1a1;--ok-t:#143328;color-scheme:dark}
+*,*::before,*::after{box-sizing:border-box}
+html{background:#121414}
+body{margin:0;font-family:'Roboto',system-ui,-apple-system,'Segoe UI',sans-serif;background:var(--bg);color:var(--ink);font-size:16px;line-height:1.5}
+input,select,button{font:inherit}
+.logo{display:flex;align-items:center;gap:14px;font-weight:700;font-size:26px}
+.logo i{font-style:normal;display:grid;place-items:center;width:44px;height:44px;border-radius:13px;background:linear-gradient(145deg,#22cdb2,#12968c);color:#fff}
+.logo span{font-weight:400;opacity:.75}
+.btn{border:1.5px solid var(--line);background:transparent;color:var(--ink);padding:11px 20px;border-radius:14px;cursor:pointer;font-weight:700}
+.btn:hover{border-color:var(--brand-b)}
+.btn:focus-visible,input:focus-visible,select:focus-visible,#side a:focus-visible{outline:2px solid var(--brand-b);outline-offset:2px}
+.btn.p{background:var(--brand);border-color:var(--brand-b);color:#fff}
+.btn.sm{padding:6px 12px;font-size:14px}
+.mute{color:var(--mute);font-size:14px;margin:0}
+#auth{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:22px;padding:24px;background:var(--side);color:#fff}
+#auth .tabs{display:flex;gap:6px;background:rgba(255,255,255,.07);padding:5px;border-radius:16px;width:100%;max-width:420px}
+#auth .tabs .btn{flex:1;border:0;color:#bcd6d4;padding:9px 6px;font-size:14px;border-radius:12px}
+#auth .tabs .btn.on{background:var(--side-on);color:#fff}
+.card{background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:26px;padding:26px;width:100%;max-width:420px}
+label{display:block;font-size:14px;font-weight:500;color:var(--mute);margin:14px 0 6px}
+label:first-child{margin-top:0}
+input,select{width:100%;padding:12px 14px;border:1.5px solid var(--line);border-radius:14px;background:var(--bg);color:var(--ink)}
+.card .btn.p,.form .btn.p{margin-top:18px}
+.msg{margin:14px 0 0;padding:10px 14px;border-radius:12px;font-size:14px;font-weight:500;line-height:1.4}
+.msg:empty{display:none}
+.msg.err{color:var(--bad);background:var(--bad-t);border:1px solid rgba(255,123,114,.3)}
+.msg.ok{color:var(--ok);background:var(--ok-t);border:1px solid rgba(78,209,161,.3)}
+.msg.info{color:var(--mute);background:rgba(255,255,255,.05);border:1px solid var(--line)}
+.boot{margin:0 0 14px;font-size:13px;color:var(--mute);opacity:0;animation:bootshow .3s 3s forwards}
+@keyframes bootshow{to{opacity:1}}
+.tag{margin:-10px 0 0;color:#a9c4c2;font-size:15px;text-align:center;max-width:380px}
+.ct{margin:0 0 4px;font-size:22px}
+.cs{margin:0 0 18px}
+.foot{margin:0;color:#7f9c9a;font-size:12.5px;text-align:center;max-width:380px}
+#app{display:none;min-height:100vh;grid-template-columns:270px 1fr;grid-template-rows:76px 1fr}
+#side{grid-row:1/3;background:var(--side);color:#d9ebe9;padding:22px 14px;display:flex;flex-direction:column;gap:2px;position:sticky;top:0;height:100vh;overflow-y:auto}
+#side .logo{color:#fff;padding:0 12px 10px}
+#side h6{margin:18px 14px 6px;font-size:13px;color:#8fb0b3;letter-spacing:.16em}
+#side a{display:flex;align-items:center;gap:16px;padding:12px 16px;border-radius:16px;cursor:pointer;font-size:17px;color:#e4f1ef}
+#side a b{width:22px;text-align:center;font-weight:400;opacity:.85}
+#side a:hover{background:rgba(255,255,255,.06)}
+#side a.on{background:var(--side-on)}
+#side a.lock{opacity:.4}
+#logout{margin-top:auto;border-top:1px solid rgba(255,255,255,.12);border-radius:0!important}
+header{grid-column:2;display:flex;align-items:center;justify-content:flex-end;gap:14px;padding:0 28px;background:var(--surface);border-bottom:1px solid var(--line)}
+#burger{display:none;padding:10px 14px;font-size:20px;line-height:1}
+.avatar{width:50px;height:50px;border-radius:50%;background:var(--chip);color:var(--brand-b);display:grid;place-items:center;font-weight:700}
+main{grid-column:2;padding:30px 28px;max-width:1100px;width:100%}
+#shade{display:none}
+h1{font-size:30px;margin:0 0 6px}
+h2{font-size:20px}
+.sub{color:var(--mute);margin:0 0 20px}
+.acts{display:flex;flex-wrap:wrap;gap:12px;margin-bottom:24px}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin-bottom:18px}
+.kpi{background:var(--surface);border:1.5px solid var(--line);border-radius:24px;padding:22px}
+.kpi small{color:var(--mute)}
+.kpi b{display:block;font-size:38px;line-height:1.1;margin:12px 0 6px}
+.panel{background:var(--surface);border:1.5px solid var(--line);border-radius:24px;overflow:hidden;margin-bottom:18px}
+.ph{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:20px 24px}
+.ph h2{margin:0}
+.ph p{margin:2px 0 0;color:var(--mute);font-size:14px}
+.tw{overflow-x:auto}
+table{width:100%;border-collapse:collapse;min-width:480px}
+th,td{text-align:left;padding:14px 20px;border-top:1px solid var(--line);white-space:nowrap}
+th{font-size:13px;color:var(--mute);letter-spacing:.06em;background:rgba(127,127,127,.06)}
+.pill{display:inline-block;font-size:14px;font-weight:700;padding:5px 12px;border-radius:99px}
+.pill.ok{background:var(--ok-t);color:var(--ok)}.pill.warn{background:var(--warn-t);color:var(--warn)}.pill.bad{background:var(--bad-t);color:var(--bad)}
+.search{max-width:340px;margin-bottom:16px}
+.form{background:var(--surface);border:1.5px solid var(--line);border-radius:24px;padding:22px;margin-bottom:18px;display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:0 16px;align-items:end}
+.form label{margin-top:10px}
+.form .btn{margin-top:18px}
+.row{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:14px 24px;border-top:1px solid var(--line)}
+.row em{display:block;font-style:normal;color:var(--mute);font-size:14px}
+.empty{text-align:center;padding:40px 20px;color:var(--mute)}
+#rcpt{background:var(--surface);border:1.5px solid var(--brand);border-radius:24px;padding:22px;max-width:380px;margin-bottom:18px}
+@media (max-width:900px){
+ #app{grid-template-columns:1fr;grid-template-rows:auto 1fr}
+ #side{position:fixed;left:0;top:0;bottom:0;width:min(300px,82vw);z-index:30;transform:translateX(-100%);transition:transform .2s;padding-top:22px}
+ #app.open #side{transform:none}
+ #app.open #shade{display:block;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:20}
+ header{grid-column:1;height:76px}
+ #burger{display:block;order:3}
+ .avatar{order:2;width:44px;height:44px}
+ #acct{order:1}
+ main{grid-column:1;padding:24px 16px}
+ h1{font-size:26px}
+}
+@media print{html,body{background:#fff!important}body *{visibility:hidden}#rcpt,#rcpt *{visibility:visible;color:#111!important}#rcpt{position:absolute;left:0;top:0;width:100%;max-width:none;border:0;background:#fff}.noprint{display:none!important}}
+</style>
+</head>
+<body>
+<div id="auth">
+  <div class="logo"><i>T</i>TRIX <span>Pharmacy</span></div>
+  <p class="tag">Stock, sales and expiry control for your pharmacy.</p>
+  <div class="tabs">
+    <button class="btn on" data-t="in">Sign in</button>
+    <button class="btn" data-t="up">Create account</button>
+  </div>
+  <div class="card">
+    <p class="boot" id="boot">Still loading… If this stays on screen, please reload the page or open it in a full-page view.</p>
+    <h2 class="ct" id="ct">Welcome back</h2>
+    <p class="mute cs" id="cs">Sign in to manage your pharmacy.</p>
+    <div id="f-in">
+      <label for="inE">Email address</label><input id="inE" type="email" autocomplete="email" placeholder="name@yourpharmacy.com">
+      <label for="inP">Password</label><input id="inP" type="password" autocomplete="current-password" placeholder="Your password">
+      <button class="btn p" id="doIn" style="width:100%">Sign in</button>
+    </div>
+    <div id="f-up" style="display:none">
+      <label for="upN">Pharmacy name</label><input id="upN" autocomplete="organization" placeholder="e.g. Green Cross Pharmacy">
+      <label for="upE">Email address</label><input id="upE" type="email" autocomplete="email" placeholder="name@yourpharmacy.com">
+      <label for="upP">Password</label><input id="upP" type="password" autocomplete="new-password" placeholder="At least 8 characters">
+      <button class="btn p" id="doUp" style="width:100%">Create account</button>
+      <p class="mute" style="margin-top:12px">You will be the Owner of this pharmacy and can add staff later.</p>
+    </div>
+    <p class="msg" id="msg" role="status"></p>
+  </div>
+  <p class="foot">Secure sign-in. Each pharmacy’s data is kept separate from every other account.</p>
+</div>
+<div id="app">
+  <div id="shade"></div>
+  <nav id="side">
+    <div class="logo"><i>T</i>TRIX <span>Pharmacy</span></div>
+    <h6>PHARMACY OPERATIONS</h6>
+    <a data-v="dash" class="on" tabindex="0"><b>▦</b>Dashboard</a>
+    <a data-v="stock" tabindex="0"><b>▤</b>Stock &amp; batches</a>
+    <a data-v="scan" tabindex="0"><b>▮</b>Barcode scanner</a>
+    <a data-v="br" tabindex="0"><b>⌂</b>Branches &amp; transfers</a>
+    <a data-v="sale" tabindex="0"><b>↗</b>Record a sale</a>
+    <a data-v="buy" tabindex="0"><b>↙</b>Purchases &amp; suppliers</a>
+    <a data-v="exp" tabindex="0"><b>◔</b>Expiry control</a>
+    <a data-v="cat" tabindex="0"><b>✚</b>Medicine catalogue</a>
+    <a data-v="rep" tabindex="0"><b>▥</b>Reports &amp; audit</a>
+    <h6>CARE &amp; ADMINISTRATION</h6>
+    <a data-v="pat" tabindex="0"><b>♙</b>Patients</a>
+    <a data-v="ins" tabindex="0"><b>▧</b>Insurance &amp; claims</a>
+    <a data-v="noti" tabindex="0"><b>♪</b>Notifications</a>
+    <a data-v="team" id="navTeam" tabindex="0"><b>♧</b>Team &amp; access</a>
+    <a data-v="plan" tabindex="0"><b>$</b>Plans &amp; billing</a>
+    <a data-v="set" tabindex="0"><b>⚙</b>Settings</a>
+    <a id="logout" tabindex="0"><b>↩</b>Sign out</a>
+  </nav>
+  <header>
+    <button class="btn" id="acct">Account</button>
+    <div class="avatar" id="av">TA</div>
+    <button class="btn" id="burger" aria-label="Open menu">☰</button>
+  </header>
+  <main id="view"></main>
+</div>
+<script>
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+const mem={};
+const store={
+ get(k){try{return JSON.parse(localStorage.getItem(k))}catch(e){return mem[k]??null}},
+ set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){mem[k]=v}}
+};
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+/* ---- security helpers: passwords are hashed (never stored as text) ---- */
+const enc=new TextEncoder(),hex=b=>[...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('');
+const rid=()=>hex(crypto.getRandomValues(new Uint8Array(8)));
+const hasSubtle=!!(window.crypto&&crypto.subtle);
+const PR=[];for(let c=2;PR.length<64;c++){let p=1;for(let d=2;d*d<=c;d++)if(c%d==0){p=0;break}if(p)PR.push(c)}
+const K256=PR.map(c=>Math.floor((Math.cbrt(c)%1)*4294967296)>>>0),H256=PR.slice(0,8).map(c=>Math.floor((Math.sqrt(c)%1)*4294967296)>>>0);
+function sha256(m){
+ const l=m.length,n=((l+9+63)>>6)<<6,pad=new Uint8Array(n);pad.set(m);pad[l]=128;
+ const dv=new DataView(pad.buffer);dv.setUint32(n-8,Math.floor(l/536870912));dv.setUint32(n-4,(l<<3)>>>0);
+ const h=Uint32Array.from(H256),w=new Uint32Array(64),R=(x,s)=>(x>>>s)|(x<<(32-s));
+ for(let o=0;o<n;o+=64){
+  for(let i=0;i<16;i++)w[i]=dv.getUint32(o+i*4);
+  for(let i=16;i<64;i++){const a=w[i-15],c=w[i-2];w[i]=(w[i-16]+(R(a,7)^R(a,18)^(a>>>3))+w[i-7]+(R(c,17)^R(c,19)^(c>>>10)))>>>0}
+  let[a,b,c,d,e,f,g,k]=h;
+  for(let i=0;i<64;i++){
+   const t1=(k+(R(e,6)^R(e,11)^R(e,25))+((e&f)^(~e&g))+K256[i]+w[i])>>>0,t2=((R(a,2)^R(a,13)^R(a,22))+((a&b)^(a&c)^(b&c)))>>>0;
+   k=g;g=f;f=e;e=(d+t1)>>>0;d=c;c=b;b=a;a=(t1+t2)>>>0;
+  }
+  h[0]+=a;h[1]+=b;h[2]+=c;h[3]+=d;h[4]+=e;h[5]+=f;h[6]+=g;h[7]+=k;
+ }
+ const out=new Uint8Array(32),ov=new DataView(out.buffer);h.forEach((x,i)=>ov.setUint32(i*4,x));return out;
+}
+async function hashPw(p,salt,alg){
+ alg=alg||(hasSubtle?'p':'s');
+ if(alg==='p'){
+  if(!hasSubtle)throw new Error('This preview blocks secure hashing. Open the pen in full-page view.');
+  const k=await crypto.subtle.importKey('raw',enc.encode(p),'PBKDF2',false,['deriveBits']);
+  return hex(await crypto.subtle.deriveBits({name:'PBKDF2',salt:enc.encode(salt),iterations:150000,hash:'SHA-256'},k,256));
+ }
+ const sb=enc.encode(salt);let x=enc.encode(salt+'|'+p);
+ for(let i=0;i<20000;i++){const t=new Uint8Array(x.length+sb.length);t.set(x);t.set(sb,x.length);x=sha256(t)}
+ return hex(x);
+}
+async function mkUser(name,email,pass,role,org){const salt=rid(),alg=hasSubtle?'p':'s';return{id:rid(),name,email,salt,alg,hash:await hashPw(pass,salt,alg),role,org}}
+const users=()=>store.get('trix_users')||[];
+
+/* ---- billing: CHANGE THE SECRET and keep it private ---- */
+const SECRET='put-your-own-long-random-secret-here';
+const PRICE=500000;
+const cyrb53=(s,seed=0)=>{let h1=0xdeadbeef^seed,h2=0x41c6ce57^seed;for(let i=0,c;i<s.length;i++){c=s.charCodeAt(i);h1=Math.imul(h1^c,2654435761);h2=Math.imul(h2^c,1597334677)}h1=Math.imul(h1^(h1>>>16),2246822507)^Math.imul(h2^(h2>>>13),3266489909);h2=Math.imul(h2^(h2>>>16),2246822507)^Math.imul(h1^(h1>>>13),3266489909);return 4294967296*(2097151&h2)+(h1>>>0)};
+const codeFor=(email,month)=>{const n=cyrb53(email.trim().toLowerCase()+'|'+month+'|'+SECRET).toString(36).toUpperCase().padStart(10,'0').slice(-10);return 'TRX-'+n.slice(0,5)+'-'+n.slice(5)};
+const ym=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');
+
+/* ---- each pharmacy (org) has its own private record; every pharmacy starts EMPTY ---- */
+const seed=()=>({name:'My Pharmacy',br:['Main'],meds:[],sales:[],buys:[],pats:[],clm:[],sups:[],log:[],xf:[]});
+const norm=d=>({...seed(),...(d||{})});
+let D=seed(),O={paidUntil:0,pending:null,used:[],db:null},me=null,cur='dash',flash='',RC=null;
+const isOwner=()=>!!me&&me.role==='Owner';
+const active=()=>O.paidUntil>Date.now();
+const left=()=>Math.ceil((O.paidUntil-Date.now())/864e5);
+const save=()=>store.set('trix_org_'+me.org,O);
+const log=t=>{D.log.unshift([new Date().toLocaleString(),me.name,t]);D.log=D.log.slice(0,200);save()};
+const $m=v=>'FRW '+Math.round(v).toLocaleString();
+const days=m=>(new Date(m.e)-new Date())/864e5;
+const status=m=>m.q===0?['bad','Out of stock']:days(m)<0?['bad','Expired']:days(m)<=90?['warn','Near expiry']:m.q<30?['warn','Low stock']:['ok','In stock'];
+const pill=m=>{const s=status(m);return `<span class="pill ${s[0]}">${s[1]}</span>`};
+const T=(h,rows,empty)=>`<div class="panel tw"><table><thead><tr>${h.map(x=>`<th>${x}</th>`).join('')}</tr></thead><tbody>${rows.length?rows.join(''):`<tr><td colspan="${h.length}" class="empty">${empty||'Nothing here yet.'}</td></tr>`}</tbody></table></div>`;
+const tr=c=>`<tr>${c.map(x=>`<td>${x}</td>`).join('')}</tr>`;
+const F=(label,id,type,o)=>`<div><label for="${id}">${label}</label>${type==='sel'?`<select id="${id}">${o.map(x=>`<option value="${esc(x[0])}">${esc(x[1])}</option>`).join('')}</select>`:`<input id="${id}" type="${type}" ${o||''}>`}</div>`;
+const sellable=()=>D.meds.map((m,i)=>[i,m]).filter(([i,m])=>m.q>0&&days(m)>=0);
+const v=id=>$('#'+id).value;
+const note=t=>flash=t;
+const hint=t=>`<div class="panel empty">${t}</div>`;
+const team=()=>users().filter(u=>u.org===me.org);
+
+/* ---- sign in / create account ---- */
+const msg=(t,ok)=>{const m=$('#msg');m.textContent=t;m.className='msg '+(t?(ok?'ok':'err'):'')};
+$$('.tabs .btn').forEach(b=>b.onclick=()=>{$$('.tabs .btn').forEach(x=>x.classList.toggle('on',x===b));['in','up'].forEach(t=>$('#f-'+t).style.display=t===b.dataset.t?'':'none');$('#ct').textContent=b.dataset.t==='in'?'Welcome back':'Create your pharmacy account';$('#cs').textContent=b.dataset.t==='in'?'Sign in to manage your pharmacy.':'It takes less than a minute.';msg('')});
+const fails={};
+const showErr=t=>$('#app').style.display==='grid'?err(t):msg(t);
+const guard=fn=>async(...a)=>{try{return await fn(...a)}catch(e){showErr('Something went wrong: '+(e&&e.message||e))}};
+addEventListener('error',e=>showErr('Error: '+e.message));
+addEventListener('unhandledrejection',e=>showErr('Error: '+(e.reason&&e.reason.message||e.reason)));
+$('#doIn').onclick=guard(async()=>{
+ const e=v('inE').trim().toLowerCase(),k=fails[e]||{n:0,t:0};
+ if(k.n>=5&&Date.now()-k.t<60000)return msg('Too many attempts. Wait a minute and try again.');
+ const u=users().find(x=>x.email===e);
+ if(!u||await hashPw(v('inP'),u.salt,u.alg)!==u.hash){fails[e]={n:k.n+1,t:Date.now()};return msg('Email or password is incorrect. Check both and try again.')}
+ delete fails[e];store.set('trix_sess',u.id);enter(u);
+});
+$('#doUp').onclick=guard(async()=>{
+ const n=v('upN').trim(),e=v('upE').trim().toLowerCase(),p=v('upP');
+ if(!n||!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(e))return msg('Enter your name and a valid email address.');
+ if(p.length<8)return msg('Use a password with at least 8 characters.');
+ const all=users();
+ if(all.some(x=>x.email===e))return msg('That email already has an account. Sign in instead.');
+ const u=await mkUser(n,e,p,'Owner',rid());
+ all.push(u);store.set('trix_users',all);
+ store.set('trix_org_'+u.org,{paidUntil:0,pending:null,used:[],db:null});
+ store.set('trix_sess',u.id);enter(u);
+});
+function enter(u){
+ me=u;O=store.get('trix_org_'+u.org)||{paidUntil:0,pending:null,used:[],db:null};D=O.db=norm(O.db);
+ $('#auth').style.display='none';$('#app').style.display='grid';
+ $('#av').textContent=u.name.split(/\s+/).map(w=>w[0]).join('').slice(0,2).toUpperCase();
+ $('#acct').textContent=u.name.split(/\s+/)[0]+' · '+u.role;
+ $('#navTeam').style.display=isOwner()?'':'none';
+ $('#side a[data-v="set"]').style.display=isOwner()?'':'none';
+ go('dash');
+}
+$('#logout').onclick=()=>{store.set('trix_sess',null);me=null;D=seed();O={paidUntil:0,pending:null,used:[],db:null};RC=null;$('#app').style.display='none';$('#app').classList.remove('open');$('#auth').style.display='flex';$('#inP').value='';$('.tabs .btn[data-t="in"]').click();msg('')};
+
+/* ---- navigation ---- */
+const toggle=o=>$('#app').classList.toggle('open',o);
+$('#burger').onclick=()=>toggle();$('#shade').onclick=()=>toggle(false);
+$$('#side a[data-v]').forEach(a=>{a.onclick=()=>go(a.dataset.v);a.onkeydown=e=>{if(e.key==='Enter')go(a.dataset.v)}});
+function go(id){
+ if(!active()&&id!=='plan')id='plan';
+ if((id==='team'||id==='set')&&!isOwner())id='dash';
+ cur=id;toggle(false);window.scrollTo(0,0);
+ $$('#side a').forEach(x=>{x.classList.toggle('on',x.dataset.v===id);x.classList.toggle('lock',!active()&&!!x.dataset.v&&x.dataset.v!=='plan')});
+ draw();
+}
+function draw(){
+ const warn=active()&&left()<=5&&isOwner()?`<p class="msg err" role="alert">Your subscription ends in ${left()} day(s). Renew in Plans &amp; billing.</p>`:'';
+ $('#view').innerHTML=(flash?`<p class="msg ok" role="status">${esc(flash)}</p>`:'')+warn+views[cur]();flash='';
+ if(cur==='cat')wireSearch();
+}
+$('#view').onclick=async e=>{
+ const b=e.target.closest('[data-a]');if(!b)return;
+ const a=b.dataset.a,i=+b.dataset.i;
+ if(a==='go')return go(b.dataset.i);
+ let r;try{r=acts[a]&&await acts[a](i)}catch(e){return err(e.message)}
+ if(r===null)return;
+ if(r)note(r);draw();
+};
+const err=t=>{$('#view').querySelector('.err')?.remove();$('#view').insertAdjacentHTML('afterbegin',`<p class="msg err" role="alert">${esc(t)}</p>`);return null};
+const ownerOnly=()=>isOwner()?false:err('Only the owner can do this.');
+
+/* ---- actions ---- */
+const acts={
+ buy(){
+  const n=v('bN').trim(),q=+v('bQ'),e=v('bE'),b=v('bB').trim(),c=+v('bC'),p=+v('bPr'),br=v('bR'),sup=v('bS').trim()||'Unknown supplier';
+  if(!n||!e||!b)return err('Fill in the medicine, batch and expiry date.');
+  if(!Number.isInteger(q)||q<1)return err('Quantity must be a whole number above zero.');
+  if(v('bC')===''||!(c>=0))return err('Enter the cost of one unit.');
+  if(v('bPr')===''||!(p>0))return err('Enter the selling price of one unit.');
+  const ex=D.meds.find(m=>m.n.toLowerCase()===n.toLowerCase()&&m.b===b&&m.br===br);
+  if(ex){ex.c=(ex.q*ex.c+q*c)/(ex.q+q);ex.q+=q;ex.p=p}
+  else D.meds.push({n,f:v('bF').trim()||'Tablet',q,e,b,c,p,br});
+  if(!D.sups.includes(sup))D.sups.push(sup);
+  D.buys.unshift([new Date().toLocaleString(),n,q,b,sup,c,br]);
+  log('Received '+q+' × '+n+' from '+sup);return 'Purchase recorded. The stock is ready to sell.';
+ },
+ sale(){
+  const m=D.meds[+v('sM')],q=+v('sQ');
+  if(!m)return err('Choose a medicine from your stock.');
+  if(!Number.isInteger(q)||q<1)return err('Quantity must be a whole number above zero.');
+  if(days(m)<0)return err('This batch is expired and cannot be sold.');
+  if(q>m.q)return err('Only '+m.q+' units are available in that batch.');
+  m.q-=q;const tot=q*m.p,id='R'+Date.now().toString(36).toUpperCase(),pat=v('sP').trim()||'Walk-in';
+  D.sales.unshift([new Date().toLocaleString(),m.n,q,tot,pat,m.br,q*m.c,me.name,id]);
+  RC={id,when:new Date().toLocaleString(),n:m.n,q,p:m.p,tot,pat,br:m.br,by:me.name,ph:D.name};
+  log('Sold '+q+' × '+m.n);return 'Sale recorded: '+$m(tot);
+ },
+ print(){window.print();return null},
+ closeRc(){RC=null;return ''},
+ addbr(){
+  if(ownerOnly())return null;
+  const n=v('brN').trim();if(!n)return err('Enter the branch name.');
+  if(D.br.some(b=>b.toLowerCase()===n.toLowerCase()))return err('That branch already exists.');
+  D.br.push(n);log('Added branch '+n);return 'Branch added.';
+ },
+ xfer(){
+  const m=D.meds[+v('xM')],q=+v('xQ'),to=v('xT');
+  if(!m||!Number.isInteger(q)||q<1||q>m.q)return err('Choose a batch and a quantity it can cover.');
+  if(to===m.br)return err('Pick a different destination branch.');
+  m.q-=q;const d=D.meds.find(x=>x.n===m.n&&x.b===m.b&&x.br===to);
+  d?d.q+=q:D.meds.push({...m,q,br:to});
+  D.xf.unshift([new Date().toLocaleString(),m.n,q,m.br,to]);log('Transferred '+q+' × '+m.n+' to '+to);return 'Transfer complete.';
+ },
+ wo(i){if(ownerOnly())return null;const m=D.meds[i];log('Wrote off '+m.q+' × '+m.n+' ('+m.b+')');m.q=0;return 'Batch written off.'},
+ pat(){const n=v('pN').trim();if(!n)return err('Enter the patient’s name.');D.pats.push([n,v('pPh').trim(),v('pI').trim()]);log('Added patient '+n);return 'Patient added.'},
+ clm(){const n=v('cP').trim(),a=+v('cA');if(!n)return err('Type the patient’s name.');if(!(a>0))return err('Enter a claim amount above zero.');D.clm.unshift([n,v('cI').trim(),a,'Pending']);log('Filed claim '+$m(a));return 'Claim filed.'},
+ cyc(i){const s=['Pending','Approved','Paid','Rejected'],c=D.clm[i];c[3]=s[(s.indexOf(c[3])+1)%4];save();return 'Claim marked '+c[3]+'.'},
+ scan(){cur='scan';window._q=v('qC').trim().toLowerCase();return ''},
+ name(){if(ownerOnly())return null;D.name=v('nm').trim()||D.name;save();return 'Settings saved.'},
+ async addstaff(){
+  if(ownerOnly())return null;
+  const n=v('tN').trim(),e=v('tE').trim().toLowerCase(),p=v('tP');
+  if(!n||!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(e))return err('Enter the staff name and a valid email address.');
+  if(p.length<8)return err('Give the staff member a password of at least 8 characters.');
+  const all=users();if(all.some(x=>x.email===e))return err('That email already has an account.');
+  all.push(await mkUser(n,e,p,'Staff',me.org));store.set('trix_users',all);log('Created staff account for '+n);
+  return 'Staff account created. Give them the email and password.';
+ },
+ rm(i){
+  if(ownerOnly())return null;
+  const u=team()[i];if(!u||u.role==='Owner'||!confirm('Remove '+u.name+'? They will not be able to sign in again.'))return null;
+  store.set('trix_users',users().filter(x=>x.id!==u.id));log('Removed staff '+u.name);return 'Staff member removed.';
+ },
+ async rpw(i){
+  if(ownerOnly())return null;
+  const u=team()[i];if(!u||u.role==='Owner')return null;
+  const p=prompt('New password for '+u.name+' (at least 8 characters):');if(p===null)return null;
+  if(p.length<8)return err('The password must have at least 8 characters.');
+  const all=users(),x=all.find(y=>y.id===u.id);x.salt=rid();x.alg=hasSubtle?'p':'s';x.hash=await hashPw(p,x.salt,x.alg);store.set('trix_users',all);log('Reset password for '+u.name);
+  return 'Password changed for '+u.name+'.';
+ },
+ pay(){
+  if(ownerOnly())return null;
+  const ref=v('pR').trim();
+  if(ref.length<4)return err('Enter the transaction reference from your payment.');
+  O.pending={m:v('pM'),ref,at:new Date().toLocaleString()};save();
+  return 'Payment submitted. Send your reference to TRIX to receive your activation code.';
+ },
+ act(){
+  if(ownerOnly())return null;
+  const c=v('pC').trim().toUpperCase(),now=new Date(),prev=new Date(now.getFullYear(),now.getMonth()-1,1);
+  O.used=O.used||[];
+  if(O.used.includes(c))return err('That code was already used.');
+  if(c!==codeFor(me.email,ym(now))&&c!==codeFor(me.email,ym(prev)))return err('That activation code is not valid for this account.');
+  O.used.push(c);O.paidUntil=Math.max(Date.now(),O.paidUntil)+30*864e5;O.pending=null;log('Subscription activated');
+  return 'Subscription active for 30 days.';
+ }
+};
+
+/* ---- screens ---- */
+const sold=()=>D.sales.reduce((s,x)=>s+x[3],0);
+const profit=()=>D.sales.reduce((s,x)=>s+x[3]-x[6],0);
+const rcpt=()=>!RC?'':`<div id="rcpt"><h2 style="margin:0">${esc(RC.ph)}</h2><p class="mute">Receipt ${RC.id} · ${esc(RC.when)}<br>Branch: ${esc(RC.br)} · Served by ${esc(RC.by)}</p><p style="margin:12px 0 4px">${esc(RC.n)} × ${RC.q} @ ${$m(RC.p)}</p><p style="margin:0"><b>Total ${$m(RC.tot)}</b>${RC.pat!=='Walk-in'?'<br>Patient: '+esc(RC.pat):''}</p><p class="mute" style="margin:10px 0">Thank you.</p><button class="btn p sm noprint" data-a="print">Print receipt</button> <button class="btn sm noprint" data-a="closeRc">Close</button></div>`;
+const views={
+ dash(){
+  const w=D.meds.filter(m=>status(m)[0]!=='ok').slice(0,5);
+  return `<h1>Good day, ${esc(me.name.split(/\s+/)[0])}</h1><p class="sub">Here’s how ${esc(D.name)} is doing today.</p>
+  <div class="acts"><button class="btn" data-a="go" data-i="buy">＋ Record purchase</button><button class="btn p" data-a="go" data-i="sale">＋ Record sale</button></div>
+  <div class="kpis"><div class="kpi"><small>Units in stock</small><b>${D.meds.reduce((s,m)=>s+m.q,0).toLocaleString()}</b><small>Across all branches</small></div>
+  <div class="kpi"><small>Expired / expiring</small><b>${D.meds.filter(m=>m.q>0&&days(m)<=90).length}</b><small>Expired or due within 90 days</small></div>
+  <div class="kpi"><small>Sales</small><b>${$m(sold())}</b><small>${D.sales.length} transactions</small></div>
+  <div class="kpi"><small>Gross profit</small><b>${$m(profit())}</b><small>Sales minus the cost of units sold</small></div></div>
+  ${D.meds.length?`<div class="panel"><div class="ph"><div><h2>Expiry watch</h2><p>Batches that need action</p></div><button class="btn" data-a="go" data-i="exp">Review</button></div>
+  <div class="tw"><table><thead><tr><th>MEDICINE</th><th>BATCH</th><th>EXPIRY</th><th>STATUS</th></tr></thead><tbody>${w.map(m=>tr([esc(m.n),esc(m.b),m.e,pill(m)])).join('')||'<tr><td colspan="4" class="empty">Nothing needs action.</td></tr>'}</tbody></table></div></div>`:hint('Start here: record a purchase from your supplier. Only stock you have received can be sold.')}`;
+ },
+ stock(){return `<h1>Stock &amp; batches</h1><p class="sub">Every batch you received. Cost is for you only and never shown to customers.</p>`+T(['MEDICINE','BATCH','BRANCH','QTY','COST / UNIT','PRICE / UNIT','EXPIRY','STATUS'],D.meds.map(m=>tr([esc(m.n),esc(m.b),esc(m.br),m.q,$m(m.c),$m(m.p),m.e,pill(m)])),'No stock yet. Record a purchase first.')},
+ scan(){
+  const q=window._q||'',r=q?D.meds.filter(m=>m.b.toLowerCase()===q||m.n.toLowerCase().includes(q)):[];
+  return `<h1>Barcode scanner</h1><p class="sub">Type or scan (with a USB scanner) a batch code.</p><div class="form">${F('Batch code or name','qC','text','autofocus')}<button class="btn p" data-a="scan">Look up</button></div>`+(q?T(['MEDICINE','BATCH','BRANCH','QTY','PRICE','EXPIRY','STATUS'],r.map(m=>tr([esc(m.n),esc(m.b),esc(m.br),m.q,$m(m.p),m.e,pill(m)])),'No match.'):'');
+ },
+ br(){
+  const opts=D.meds.map((m,i)=>[i,`${m.n} · ${m.b} · ${m.br} (${m.q})`]).filter((o,i)=>D.meds[i].q>0);
+  return `<h1>Branches &amp; transfers</h1><p class="sub">Move stock between your branches.</p>`+T(['BRANCH','BATCHES','UNITS'],D.br.map(b=>{const l=D.meds.filter(m=>m.br===b);return tr([esc(b),l.length,l.reduce((s,m)=>s+m.q,0)])}))+
+  (isOwner()?`<div class="form">${F('New branch name','brN','text','autocomplete="off" maxlength="60"')}<button class="btn p" data-a="addbr">Add branch</button></div>`:'')+
+  (D.br.length>1&&opts.length?`<div class="form">${F('Batch','xM','sel',opts)}${F('Quantity','xQ','number','min="1"')}${F('To branch','xT','sel',D.br.map(b=>[b,b]))}<button class="btn p" data-a="xfer">Transfer</button></div>`:hint('Transfers need at least two branches and some stock.'))+
+  T(['WHEN','MEDICINE','QTY','FROM','TO'],D.xf.map(x=>tr(x.map(esc))));
+ },
+ sale(){
+  const l=sellable();
+  return `<h1>Record a sale</h1><p class="sub">You can only sell stock you received from a supplier.</p>${rcpt()}`+
+  (l.length?`<div class="form">${F('Medicine batch','sM','sel',l.map(([i,m])=>[i,`${m.n} · ${m.b} · ${m.br} · ${m.q} left · ${$m(m.p)}`]))}${F('Quantity','sQ','number','min="1" value="1"')}${F('Patient (optional)','sP','text','autocomplete="off" maxlength="80"')}<button class="btn p" data-a="sale">Record sale</button></div>`:hint('No sellable stock. Record a purchase from a supplier first.'))+
+  T(['WHEN','MEDICINE','QTY','TOTAL','PROFIT','PATIENT','BRANCH','BY'],D.sales.slice(0,15).map(s=>tr([esc(s[0]),esc(s[1]),s[2],$m(s[3]),$m(s[3]-s[6]),esc(s[4]),esc(s[5]),esc(s[7])])));
+ },
+ buy(){
+  return `<h1>Purchases &amp; suppliers</h1><p class="sub">Record what you receive from suppliers. Give the cost and the selling price of one unit.</p>
+  <div class="form">${F('Medicine','bN','text','list="ml" autocomplete="off" maxlength="80"')}<datalist id="ml">${[...new Set(D.meds.map(m=>m.n))].map(n=>`<option value="${esc(n)}">`).join('')}</datalist>${F('Form','bF','text','placeholder="Tablet"')}${F('Quantity received','bQ','number','min="1"')}${F('Batch number','bB','text','autocomplete="off"')}${F('Expiry date','bE','date')}${F('Cost of 1 unit (FRW)','bC','number','min="0"')}${F('Selling price of 1 unit (FRW)','bPr','number','min="0"')}${F('Supplier','bS','text','list="sl" autocomplete="off" maxlength="80"')}<datalist id="sl">${D.sups.map(s=>`<option value="${esc(s)}">`).join('')}</datalist>${F('Branch','bR','sel',D.br.map(b=>[b,b]))}<button class="btn p" data-a="buy">Save purchase</button></div>`+
+  T(['WHEN','MEDICINE','QTY','BATCH','SUPPLIER','COST / UNIT','BRANCH'],D.buys.slice(0,20).map(b=>tr([esc(b[0]),esc(b[1]),b[2],esc(b[3]),esc(b[4]),$m(b[5]),esc(b[6])])))+
+  `<div class="panel"><div class="ph"><div><h2>Your suppliers</h2></div></div>${D.sups.map(s=>`<div class="row">${esc(s)}</div>`).join('')||'<div class="empty">Suppliers appear here after your first purchase.</div>'}</div>`;
+ },
+ exp(){
+  const l=D.meds.map((m,i)=>[m,i]).sort((a,b)=>a[0].e<b[0].e?-1:1);
+  return `<h1>Expiry control</h1><p class="sub">Soonest first.${isOwner()?' Write off expired batches.':''}</p>`+T(['MEDICINE','BATCH','QTY','EXPIRY','DAYS','STATUS',''],l.map(([m,i])=>tr([esc(m.n),esc(m.b),m.q,m.e,Math.floor(days(m)),pill(m),isOwner()&&days(m)<0&&m.q>0?`<button class="btn sm" data-a="wo" data-i="${i}">Write off</button>`:''])));
+ },
+ cat(){return `<h1>Medicine catalogue</h1><p class="sub">Every medicine you stock, with its selling price.</p><input class="search" id="q" placeholder="Search medicines" aria-label="Search medicines"><div class="panel tw"><table><thead><tr><th>MEDICINE</th><th>FORM</th><th>PRICE</th><th>STOCK</th><th>EXPIRY</th><th>STATUS</th></tr></thead><tbody id="tb"></tbody></table></div>`},
+ rep(){
+  return `<h1>Reports &amp; audit</h1><p class="sub">Sales, profit and activity.</p><div class="kpis"><div class="kpi"><small>Total sales</small><b>${$m(sold())}</b></div><div class="kpi"><small>Gross profit</small><b>${$m(profit())}</b></div><div class="kpi"><small>Stock value at cost</small><b>${$m(D.meds.reduce((s,m)=>s+m.q*m.c,0))}</b></div><div class="kpi"><small>Stock value at price</small><b>${$m(D.meds.reduce((s,m)=>s+m.q*m.p,0))}</b></div></div>`+
+  T(['WHEN','ITEM','QTY','TOTAL','PROFIT','BY'],D.sales.slice(0,20).map(s=>tr([esc(s[0]),esc(s[1]),s[2],$m(s[3]),$m(s[3]-s[6]),esc(s[7])])))+
+  (isOwner()?`<h2>Activity log</h2>`+T(['WHEN','USER','ACTION'],D.log.slice(0,40).map(x=>tr(x.map(esc)))):'');
+ },
+ pat(){return `<h1>Patients</h1><p class="sub">Your patient records.</p><div class="form">${F('Name','pN','text','autocomplete="off" maxlength="80"')}${F('Phone','pPh','tel','autocomplete="off"')}${F('Insurer','pI','text','autocomplete="off"')}<button class="btn p" data-a="pat">Add patient</button></div>`+T(['NAME','PHONE','INSURER'],D.pats.map(p=>tr(p.map(esc))))},
+ ins(){
+  return `<h1>Insurance &amp; claims</h1><p class="sub">Tap a status to move it along.</p><div class="form">${F('Patient name','cP','text','list="pl" autocomplete="off" maxlength="80"')}<datalist id="pl">${D.pats.map(p=>`<option value="${esc(p[0])}">`).join('')}</datalist>${F('Insurer','cI','text','autocomplete="off"')}${F('Amount (FRW)','cA','number','min="0"')}<button class="btn p" data-a="clm">File claim</button></div>`+
+  T(['PATIENT','INSURER','AMOUNT','STATUS'],D.clm.map((c,i)=>tr([esc(c[0]),esc(c[1]),$m(c[2]),`<button class="btn sm" data-a="cyc" data-i="${i}">${c[3]}</button>`])));
+ },
+ noti(){
+  const n=D.meds.filter(m=>status(m)[0]!=='ok').map(m=>`<div class="row"><div>${esc(m.n)} · ${esc(m.b)}<em>${esc(m.br)} · ${m.q} units · expires ${m.e}</em></div>${pill(m)}</div>`);
+  return `<h1>Notifications</h1><p class="sub">Alerts from your stock and expiry data.</p><div class="panel">${n.join('')||'<div class="empty">All clear.</div>'}</div>`;
+ },
+ team(){
+  return `<h1>Team &amp; access</h1><p class="sub">Only you, the owner, can create, reset or remove staff accounts. Staff see only your pharmacy’s data.</p>
+  <div class="form">${F('Staff name','tN','text','autocomplete="off" maxlength="80"')}${F('Staff email','tE','email','autocomplete="off"')}${F('Password (min 8)','tP','password','autocomplete="new-password"')}<button class="btn p" data-a="addstaff">Create staff account</button></div>
+  <div class="panel">${team().map((u,i)=>`<div class="row"><div>${esc(u.name)}<em>${esc(u.email)}</em></div><span>${u.role==='Owner'?'<span class="pill ok">Owner</span>':`<span class="pill warn">Staff</span> <button class="btn sm" data-a="rpw" data-i="${i}">New password</button> <button class="btn sm" data-a="rm" data-i="${i}">Remove</button>`}</span></div>`).join('')}</div>`;
+ },
+ plan(){
+  const p=!!O.pending;
+  const head=`<h1>Plans &amp; billing</h1><p class="sub">${active()?'Active — '+left()+' days left.':'There is no free trial. Pay to use the system.'}</p>
+  <div class="kpis"><div class="kpi"><small>TRIX Pharmacy · monthly</small><b>${$m(PRICE)}</b><small>Per month, all features</small></div>
+  <div class="kpi"><small>Status</small><b>${active()?'Active':p?'Pending':'Locked'}</b><small>${active()?'Renews by '+new Date(O.paidUntil).toLocaleDateString():p?'Waiting for your activation code':'Payment required'}</small></div></div>`;
+  if(!isOwner())return head+hint('Only the pharmacy owner can pay and manage the subscription. Please ask the owner.');
+  return head+`<div class="panel"><div class="ph"><div><h2>How to pay</h2><p>Pay ${$m(PRICE)} by either method, then enter the reference below.</p></div></div>
+  <div class="row"><div>1. Equity Bank<em>Account: 4007113189056</em></div></div>
+  <div class="row"><div>2. MoMo<em>+250798297779</em></div></div></div>
+  <div class="form">${F('Payment method','pM','sel',[['Equity Bank','Equity Bank'],['MoMo','MoMo']])}${F('Transaction reference','pR','text','autocomplete="off"')}<button class="btn p" data-a="pay">I have paid</button></div>
+  <div class="form">${F('Activation code from TRIX','pC','text','autocomplete="off"')}<button class="btn" data-a="act">Activate</button></div>`;
+ },
+ set(){return `<h1>Settings</h1><p class="sub">Your pharmacy details.</p><div class="form">${F('Pharmacy name','nm','text',`value="${esc(D.name)}" maxlength="80"`)}<button class="btn p" data-a="name">Save</button></div>`}
+};
+function wireSearch(){
+ const d=t=>{const r=D.meds.filter(m=>m.n.toLowerCase().includes(t.toLowerCase()));$('#tb').innerHTML=r.length?r.map(m=>tr([esc(m.n),esc(m.f),$m(m.p),m.q,m.e,pill(m)])).join(''):'<tr><td colspan="6" class="empty">No medicine matches that search.</td></tr>'};
+ $('#q').oninput=e=>d(e.target.value);d('');
+}
+
+/* ---- resume a saved session ---- */
+let canSave=true;try{localStorage.setItem('_t','1');localStorage.removeItem('_t')}catch(e){canSave=false}
+if(!canSave){const m=$('#msg');m.textContent='Preview mode: your data is kept only while this tab stays open. Open the page in full-page view to keep it.';m.className='msg info'}
+{const sid=store.get('trix_sess');const u=sid&&users().find(x=>x.id===sid);if(u)enter(u)}
+$('#boot').remove();
+</script>
+</body>
+</html>
